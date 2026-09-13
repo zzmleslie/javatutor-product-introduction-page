@@ -81,7 +81,10 @@
 	.tblwrap{overflow-x:auto}
 	/* ============ 顶栏 + Logo ============ */
 	.topbar{position:fixed;inset:0 0 auto 0;z-index:100;background:rgba(238,241,243,.72);
-	  backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8);border-bottom:1px solid var(--line2)}
+	  border-bottom:1px solid var(--line2)}
+	/* backdrop-filter 抽到伪元素：fixed+backdrop-filter 直排在长页面上会引发合成层错乱（视频残影盖住 hero） */
+	.topbar::before{content:'';position:absolute;inset:0;z-index:-1;
+	  backdrop-filter:blur(20px) saturate(1.8);-webkit-backdrop-filter:blur(20px) saturate(1.8)}
 	.topbar .wrap{display:flex;align-items:center;gap:24px;height:58px}
 	.logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:16px;letter-spacing:.02em}
 	.logo-mark{width:30px;height:30px;display:grid;place-items:center;flex:none}
@@ -108,7 +111,7 @@
 	  border-left:2px solid var(--line);padding-left:16px}
 	.human b{color:var(--accd);font-style:normal}
 	.cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
-	.hero-logo{display:block;margin:0 auto 30px;height:clamp(110px,15vw,170px);max-width:88%;object-fit:contain}
+	.hero-logo{display:block;margin:0 auto 30px;height:clamp(110px,15vw,170px);width:auto;max-width:88%;object-fit:contain;transform:translateZ(0)}
 	.codebox{font-family:var(--mono);font-size:12.5px;line-height:1.75;padding:10px 0;overflow-x:auto}
 	.cl{display:flex;padding:0 12px;white-space:pre;position:relative;transition:background .25s}
 	.cl .ln{width:34px;flex:none;text-align:right;color:#b6c0c8;user-select:none;padding-right:14px}
@@ -147,7 +150,7 @@
 	.slot-empty b{color:var(--accd);letter-spacing:.2em;font-size:13px}
 	/* —— ① Landing 看板娘视频窗 —— */
 	.hero-video{margin-top:34px}
-	.hero-video video{display:block;width:100%;max-height:640px;object-fit:contain;background:#0c1418;border-radius:var(--r-md)}
+	.hero-video video{display:block;width:100%;max-height:640px;object-fit:contain;background:#0c1418;border-radius:var(--r-md);transform:translateZ(0)}
 	/* —— ② 知识库滚动窗 —— */
 	.kbrow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;position:relative}
 	@media(max-width:960px){.kbrow{grid-template-columns:1fr}}
@@ -367,7 +370,7 @@
 	<!-- ================= ① HERO / LANDING ================= -->
 	<section class="hero">
 	  <div class="wrap">
-    <img class="hero-logo" src="logo-light.png" alt="JavaTutor">
+    <img class="hero-logo" src="logo-light.png" alt="JavaTutor" width="1264" height="340" decoding="async" fetchpriority="high">
 	    <div class="docline">
 	      <span>JAVATUTOR-2026 </span>
 	      <span> 2026-EL 参赛作品</span>
@@ -387,7 +390,7 @@
 	    <div class="hero-video reveal" id="heroVideo">
 	      <div class="macwin">
 	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">JavaTutor · Landing — javatutor.cn</span><span class="mw-live">LIVE</span></div>
-	        <video src="videos/landing-mascot.mp4" autoplay loop muted playsinline style="aspect-ratio:958/508;object-fit:cover"></video>
+	        <video src="videos/landing-mascot.mp4" loop muted playsinline preload="none" style="aspect-ratio:958/508;object-fit:cover"></video>
 	      </div>
 	      <p class="winnote"> 产品landing页加载动画 · 看板娘拉普兰德陪伴你探索看得见的运行时 </p>
 	    </div>
@@ -459,7 +462,7 @@
 	    </div>
 	    <div class="macwin reveal">
 	      <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">算法知识库 — javatutor.cn</span><span class="mw-live">LIVE</span></div>
-	      <video src="videos/kb-demo.mp4" autoplay loop muted playsinline style="aspect-ratio:958/502;object-fit:cover"></video>
+	      <video src="videos/kb-demo.mp4" loop muted playsinline preload="none" style="aspect-ratio:958/502;object-fit:cover"></video>
 	    </div>
 	    <p class="winnote reveal">FIG.1 · 运行实录 · 算法知识库实际浏览演示 · 七大分类 · markdown + index.json 统一索引 · 内容与站内一致 </p>
 	
@@ -475,7 +478,7 @@
 	    </div>
 	    <div class="macwin reveal">
 	      <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">算法模板 · ClassicCodePanel — javatutor.cn</span><span class="mw-live">LIVE</span></div>
-	      <video src="videos/tpl-demo.mp4" autoplay loop muted playsinline style="aspect-ratio:958/506;object-fit:cover"></video>
+	      <video src="videos/tpl-demo.mp4" loop muted playsinline preload="none" style="aspect-ratio:958/506;object-fit:cover"></video>
 	    </div>
 	    <p class="winnote reveal">FIG.2 · 运行实录 · 点击模板 → 即刻置入 → 自动运行与拖拽 · ClassicCodePanel 实际操作演示 </p>
 	  </div>
@@ -493,14 +496,14 @@
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">归并排序 · MergeSortTreeCanvas</span><span class="mw-live">LIVE</span></div>
 	          <!-- ⟪真实替换点：可换为真实运行画面截图 / trace 回放⟫ -->
-	          <video src="videos/viz-merge.mp4" autoplay loop muted playsinline style="aspect-ratio:708/536;object-fit:cover"></video>
+	          <video src="videos/viz-merge.mp4" loop muted playsinline preload="none" style="aspect-ratio:708/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-1 · 运行实录 · 分治树 · 分裂 → 逐层合并</p>
 	      </div>
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">KMP 字符串匹配 · KmpCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-kmp.mp4" autoplay loop muted playsinline style="aspect-ratio:694/536;object-fit:cover"></video>
+	          <video src="videos/viz-kmp.mp4" loop muted playsinline preload="none" style="aspect-ratio:694/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-2 · 运行实录 · next 数组跳转 · 命中高亮</p>
 	      </div>
@@ -509,14 +512,14 @@
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">链表反转 · LinkedListCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-reverse.mp4" autoplay loop muted playsinline style="aspect-ratio:870/536;object-fit:cover"></video>
+	          <video src="videos/viz-reverse.mp4" loop muted playsinline preload="none" style="aspect-ratio:870/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-3 · 运行实录 · prev/cur/next 三指针 · 箭头逐一反转</p>
 	      </div>
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">网络流 · GraphCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-flow.mp4" autoplay loop muted playsinline style="aspect-ratio:958/380;object-fit:cover"></video>
+	          <video src="videos/viz-flow.mp4" loop muted playsinline preload="none" style="aspect-ratio:958/380;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-4 · 运行实录 · 增广路径 · 流量累加</p>
 	      </div>
@@ -525,21 +528,21 @@
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">有向图 · GraphCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-digraph.mp4" autoplay loop muted playsinline style="aspect-ratio:808/536;object-fit:cover"></video>
+	          <video src="videos/viz-digraph.mp4" loop muted playsinline preload="none" style="aspect-ratio:808/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-5 · 运行实录 · BFS 波纹扩散 · 访问编号</p>
 	      </div>
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">堆排序 · TreeCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-heap.mp4" autoplay loop muted playsinline style="aspect-ratio:808/536;object-fit:cover"></video>
+	          <video src="videos/viz-heap.mp4" loop muted playsinline preload="none" style="aspect-ratio:808/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-6 · 运行实录 · 堆树 · 绿色已排序尾段</p>
 	      </div>
 	      <div>
 	        <div class="macwin">
 	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">插入排序 · SortBarCanvas</span><span class="mw-live">LIVE</span></div>
-	          <video src="videos/viz-insert.mp4" autoplay loop muted playsinline style="aspect-ratio:704/536;object-fit:cover"></video>
+	          <video src="videos/viz-insert.mp4" loop muted playsinline preload="none" style="aspect-ratio:704/536;object-fit:cover"></video>
 	        </div>
 	        <p class="winnote">FIG.3-7 · 运行实录 · 已排序边界 · 玫红插入位</p>
 	      </div>
@@ -559,12 +562,12 @@
 	      <div class="macwin">
 	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">运行实录 · 控制流图 · 二分查找 — Mermaid</span><span class="mw-live">LIVE</span></div>
 	        <!-- ⟪真实替换点：可换为产品 Mermaid 流程图的真实捕获⟫ -->
-	        <video src="videos/viz-flowchart.mp4" autoplay loop muted playsinline style="aspect-ratio:492/536;object-fit:cover"></video>
+	        <video src="videos/viz-flowchart.mp4" loop muted playsinline preload="none" style="aspect-ratio:492/536;object-fit:cover"></video>
 	      </div>
 	      <!-- 窗2 · 内存状态 -->
 	      <div class="macwin">
 	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">内存状态 · 栈帧 + 堆数组</span><span class="mw-live">LIVE</span></div>
-	        <video src="videos/viz-memory.mp4" autoplay loop muted playsinline style="aspect-ratio:566/536;object-fit:cover"></video>
+	        <video src="videos/viz-memory.mp4" loop muted playsinline preload="none" style="aspect-ratio:566/536;object-fit:cover"></video>
 	      </div>
 	    </div>
 	    <p class="winnote reveal">FIG.4 · 运行实录 · 左:Mermaid 流程图（当前节点高亮） · 右:栈帧 + 堆数组联动 </p>
@@ -577,11 +580,11 @@
 	      <h2>LeetCode 主代码补全，跑通你的思路。</h2>
 	      <p class="sub">粘贴题目的主代码，自动补全外围结构与测试用例，逐行比对输入输出，在可视化执行中验证解法。</p>
 	    </div>
-	    <div class="panel reveal">
-	      <div class="pin">
-	        <div class="ph"><span>测试 · LEETCODE 主代码补全</span><span>DEMO 待补</span></div>
-	        <div class="slot-empty"><b>预留空位</b><span>测试模式 / LeetCode 主代码补全 · 内容待补充</span></div>
-	      </div></div>
+	    <div class="macwin reveal">
+	      <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">测试 · LeetCode 主代码补全 — javatutor.cn</span><span class="mw-live">LIVE</span></div>
+	      <video src="videos/test-demo.mp4" loop muted playsinline preload="none" style="aspect-ratio:1728/1016;object-fit:cover"></video>
+	    </div>
+	    <p class="winnote reveal">FIG.5 · 运行实录 · 粘贴主代码 → 自动补全 → 用例逐行比对 </p>
 	  </div>
 	</section>
 	<!-- ================= SEC.06 多文件模式（预留空位） ================= -->
@@ -619,7 +622,7 @@
 	    </div></div>
 	    <div class="grid2" style="margin-bottom:20px">
 	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>信息分层 · 三条路线</span><span>FIG.5-1</span></div>
+	        <div class="ph"><span>信息分层 · 三条路线</span><span>FIG.7-1</span></div>
 	        <div class="tblwrap" style="padding:6px 10px 12px">
 	          <table class="tbl">
 	            <tr><th>信息</th><th>走法</th><th>理由</th></tr>
@@ -630,7 +633,7 @@
 	        </div>
 	      </div></div>
 	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>工具集 · 三个工具，各司其职</span><span>FIG.5-2</span></div>
+	        <div class="ph"><span>工具集 · 三个工具，各司其职</span><span>FIG.7-2</span></div>
 	        <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
 	          <div><span class="pnode" style="margin:0 0 6px">analyze_code</span><p class="feat-b" style="font-size:12.5px">确定性节点 · 有代码必跑。产出复杂度 / 算法 / 数据结构标签，写入工作记忆（importance 0.85）。</p></div>
 	          <div><span class="pnode hot" style="margin:0 0 6px">fetch_execution_context</span><p class="feat-b" style="font-size:12.5px">按 run_id 拉取整体执行上下文，先存 state.fetched_context，再按需展示。</p></div>
@@ -659,7 +662,7 @@
 	    </div></div>
 	    <div class="grid2">
 	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>GSSC 上下文工程</span><span>FIG.5-3</span></div>
+	        <div class="ph"><span>GSSC 上下文工程</span><span>FIG.7-3</span></div>
 	        <div style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
 	          <p class="feat-b"><b style="color:var(--accd)">Gather 聚合</b> — 系统指令 + 项目知识 RAG top-3 + Java 语料 + 工作记忆 + 执行数据 + 最近 5 轮对话</p>
 	          <p class="feat-b"><b style="color:var(--accd)">Select 择优</b> — 评分 = 相关性 ×0.7 + 新近性 ×0.3，贪心填充 token 预算</p>
@@ -668,7 +671,7 @@
 	        </div>
 	      </div></div>
 	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>决策痕迹 · 每条回答附带</span><span>FIG.5-4</span></div>
+	        <div class="ph"><span>决策痕迹 · 每条回答附带</span><span>FIG.7-4</span></div>
 	        <div class="json"><span class="jk">"intent"</span><span class="jp">:</span> <span class="js">"解释第 8 步 arr 的变化原因"</span><span class="jp">,</span>
 	<span class="jk">"confidence"</span><span class="jp">:</span> <span class="jn">0.92</span><span class="jp">,</span>
 	<span class="jk">"tool_calls"</span><span class="jp">:</span> <span class="jp">[</span>{ <span class="jk">"tool"</span><span class="jp">:</span> <span class="js">"fetch_execution_context"</span><span class="jp">,</span> <span class="jk">"ms"</span><span class="jp">:</span> <span class="jn">118</span> <span class="jp">},</span>
@@ -682,7 +685,7 @@
 	    <div class="pg-t" style="margin:24px 0 12px">▍与学生对话 · 两个高频瞬间</div>
 	    <div class="grid2" style="margin-bottom:20px">
 	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>报错现场 · 一键求助</span><span>FIG.5-5</span></div>
+	        <div class="ph"><span>报错现场 · 一键求助</span><span>FIG.7-5</span></div>
 	        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px">
 	          <div class="codebox" style="border:1px solid var(--line2);background:var(--white)">
 	            <div class="cl"><span class="ln">6</span><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt;= arr.length; i++) {</code></div>
@@ -700,7 +703,7 @@
 	        </div>
 	      </div></div>
 	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>一句话修改 · 弹窗确认</span><span>FIG.5-6</span></div>
+	        <div class="ph"><span>一句话修改 · 弹窗确认</span><span>FIG.7-6</span></div>
 	        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px">
 	          <div style="display:flex;justify-content:flex-end">
 	            <span style="background:var(--ink);color:#fff;font-size:12.5px;padding:8px 14px;border-radius:18px 18px 5px 18px">请帮我修改这段代码</span>
@@ -753,7 +756,7 @@
 	    </div>
 	    <div class="grid2">
 	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>三轮真实迭代档案</span><span>FIG.6-1</span></div>
+	        <div class="ph"><span>三轮真实迭代档案</span><span>FIG.8-1</span></div>
 	        <div class="tblwrap" style="padding:6px 10px 14px">
 	          <table class="tbl">
 	            <tr><th>轮次</th><th>Judge 均分</th><th>Grounding</th><th>工具调用准确率</th><th>关键变化</th></tr>
@@ -764,7 +767,7 @@
 	        </div>
 	      </div></div>
 	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>工具调用准确率走势</span><span>FIG.6-2</span></div>
+	        <div class="ph"><span>工具调用准确率走势</span><span>FIG.8-2</span></div>
 	        <div style="padding:22px 20px">
 	          <div class="bar-row"><span class="bar-label">Round-1</span><div class="bar-track"><div class="bar" style="--w:48%"></div></div><span class="bar-val">0.48</span></div>
 	          <div class="bar-row"><span class="bar-label">Round-2</span><div class="bar-track"><div class="bar" style="--w:58%"></div></div><span class="bar-val">0.58</span></div>
@@ -794,14 +797,14 @@
 	    </div>
 	    <div class="grid2">
 	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>TDD 流程</span><span>FIG.7-1</span></div>
+	        <div class="ph"><span>TDD 流程</span><span>FIG.9-1</span></div>
 	        <div style="padding:22px 20px">
 	          <div class="flow"><span class="fs">spec</span><span class="fa">→</span><span class="fs">plan</span><span class="fa">→</span><span class="fs">devlog</span><span class="fa">→</span><span class="fs">review</span><span class="fa">→</span><span class="fs" style="border-color:var(--acc);color:var(--accd)">每轮评估留档</span></div>
 	          <p class="feat-b" style="margin-top:16px">docs/devlog 开发日志 · docs/reviews 审查记录 · docs/DESIGN.md 设计规约，随代码提交登记。密钥不进仓库，结构化日志 request-id 脱敏。</p>
 	        </div>
 	      </div></div>
 	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>三层沙箱</span><span>FIG.7-2</span></div>
+	        <div class="ph"><span>三层沙箱</span><span>FIG.9-2</span></div>
 	        <div style="padding:16px 20px 20px">
 	          <table class="tbl">
 	            <tr><th>层</th><th>拦截内容</th></tr>
@@ -913,6 +916,23 @@
 	  if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target);}
 	}),{threshold:.1});
 	document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+	/* ═══════════════════════ 视口外视频自动暂停 ═══════════════════════
+	   13 个 autoplay loop 视频同时解码会把 GPU/解码资源占满，滚回顶部时
+   引发合成层错乱（视频残影盖住 hero logo）。滚出视口即暂停，回来再续播。 */
+	const heroVid=document.querySelector('.hero-video video');
+	const vio=new IntersectionObserver(es=>es.forEach(e=>{
+	  const v=e.target;
+	  if(e.isIntersecting){
+	    /* 重入视口时 hero 视频整层重建（load），清掉可能错位的残留纹理 */
+	    if(v===heroVid && v.dataset.offscreen==='1') v.load();
+	    v.dataset.offscreen='0';
+	    if(v.paused) v.play().catch(()=>{});
+	  }else{
+	    v.dataset.offscreen='1';
+	    if(!v.paused) v.pause();
+	  }
+	}),{rootMargin:'150px'});
+	document.querySelectorAll('video').forEach(v=>{v.removeAttribute('autoplay');vio.observe(v);});
 	</script>
 	</body>
 	</html>
