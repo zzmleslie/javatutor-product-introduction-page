@@ -283,12 +283,16 @@
 	.pull footer{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink3)}
 	.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease;transition-delay:var(--d,0s)}
 	.reveal.on{opacity:1;transform:none}
+	/* 光泽扫光：卡片滚入视口（.on）时向右扫过一次；之后恢复默认 hover 扫光 */
+	.panel.reveal.on::after{animation:panel-sweep 1.25s cubic-bezier(.35,0,.25,1) .55s 1}
+	@keyframes panel-sweep{from{transform:translateX(0) skewX(-16deg)}to{transform:translateX(340%) skewX(-16deg)}}
 	/* ============ 痛点 / 架构 / 数据结构 ============ */
 	.pain-num{font-family:var(--mono);font-size:34px;font-weight:700;color:var(--ink);line-height:1;margin-bottom:16px}
 	.pain-num b{color:var(--rose);font-size:inherit}
 	.feat-h{font-size:17px;font-weight:800;margin-bottom:10px}
 	.feat-b{font-size:13.5px;line-height:1.95;color:var(--ink2)}
 	/* ===== ⑨ EPILOGUE 寄语（连续行文版） ===== */
+	#epilogue{padding-bottom:140px}
 	#epilogue .epi{max-width:780px}
 	#epilogue .epi p{font-size:15.5px;line-height:2.05;color:var(--ink2);margin:0 0 18px}
 	#epilogue .epi-final{font-size:17.5px;font-weight:700;color:var(--ink);line-height:1.95;margin-top:36px}
@@ -321,6 +325,37 @@
 	.loop-t{font-weight:800;font-size:15px;margin-bottom:6px}
 	.loop-s{font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.7}
 	.loop-a{display:grid;place-items:center;font-family:var(--mono);color:var(--acc);font-size:18px}
+	/* ============ GAP→BRIDGE 立足点 + 模式分割 ============ */
+	.gap-lead{max-width:780px;font-size:16px;line-height:1.95;letter-spacing:.02em;font-weight:500;color:var(--ink2);margin-bottom:40px}
+	.gap-lead .en-serif{color:var(--accd)}
+	.gapline{display:grid;grid-template-columns:150px 1.1fr 1fr;border:1px solid var(--line2);border-radius:var(--r-md);overflow:hidden;background:var(--white);box-shadow:var(--shadow-1)}
+	.gapline + .gapline{margin-top:12px}
+	.g-no{display:flex;flex-direction:column;justify-content:center;gap:3px;padding:16px;background:var(--bg2);border-right:1px solid var(--line2);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--rose)}
+	.g-no small{font-family:var(--sans);font-size:14.5px;font-weight:700;letter-spacing:.01em;color:var(--ink)}
+	.g-gap,.g-fix{padding:16px 20px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+	.g-gap{border-right:1px dashed var(--line2)}
+	.g-gap b{font-size:14px;color:var(--ink)}
+	.g-gap span{font-size:12.5px;line-height:1.75;color:var(--ink3)}
+	.g-fix{background:linear-gradient(0deg,rgba(13,158,196,.05),rgba(13,158,196,.05)),var(--white)}
+	.g-fix b{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--accd)}
+	.g-fix span{font-size:12.5px;line-height:1.75;color:var(--ink2)}
+	.g-fix span b{color:var(--ink)}
+	.g-fix code{font-family:var(--mono);font-size:11px;background:var(--accdim);color:var(--accd);padding:1px 5px;border-radius:4px}
+	@media(max-width:860px){
+	  .gapline{grid-template-columns:1fr}
+	  .g-no{flex-direction:row;align-items:baseline;gap:10px;border-right:0;border-bottom:1px solid var(--line2)}
+	  .g-gap{border-right:0;border-bottom:1px dashed var(--line2)}
+	}
+	.mode-div{display:flex;align-items:center;gap:18px}
+	.mode-div::before,.mode-div::after{content:'';flex:1;height:1px;background:var(--line)}
+	.mode-div span{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.24em;color:var(--accd);white-space:nowrap}
+	.mode-div span::before{content:'◆ ';letter-spacing:0;font-size:9px}
+	/* ============ Agent 场景 · 无边框小窗组（一排一个） ============ */
+	.scene{margin-bottom:34px}
+	.scene-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+	.scene-h b{font-size:15.5px;color:var(--ink)}
+	.scene-h span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ink3)}
+	.scene-k{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--accd);margin-bottom:8px}
 	.json{font-family:var(--mono);font-size:12px;line-height:1.85;padding:16px 18px;overflow-x:auto;color:var(--ink2)}
 	.json .jk{color:var(--accd)}.json .js{color:var(--ok)}.json .jn{color:#c2410c}.json .jb{color:var(--rose)}.json .jp{color:var(--ink3)}
 	/* ============ 评估 / 工程 / 团队 ============ */
@@ -362,7 +397,7 @@
 	      <span class="logo-mark" id="logoMark"></span>
 	    </a>
 	    <nav>
-	      <a href="#kb">知识库</a><a href="#tpl">模板</a><a href="#viz">可视化</a><a href="#flow">执行</a><a href="#agent">智能体</a><a href="#eval">验证</a><a href="#team">团队</a>
+	      <a href="#pain">项目背景</a><a href="#kb">知识库</a><a href="#tpl">模板</a><a href="#viz">可视化</a><a href="#flow">流程图</a><a href="#flow">内存监控</a><a href="#test">leetcode</a><a href="#multifile">多文件</a><a href="#agent">智能体</a><a href="#team">团队</a>
 	    </nav>
 	  </div>
 	</header>
@@ -377,7 +412,7 @@
 	      <span>TEAM 喵喵喵喵 </span>
 	    </div>
 	    <div class="kick">JAVA 算法可视化 × AI 智能体辅助教学系统</div>
-	    <h1>让程序的执行过程，<br><em>完全可见</em>。</h1>
+	    <h1>让程序执行过程，<br><em>完全可见</em>。</h1>
 	    <p class="lede en-serif">
 	      Make the invisible visible. Understand code by seeing it happen.
 	    </p>
@@ -392,18 +427,21 @@
 	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">JavaTutor · Landing — javatutor.cn</span><span class="mw-live">LIVE</span></div>
 	        <video src="videos/landing-mascot.mp4" loop muted playsinline preload="none" style="aspect-ratio:958/508;object-fit:cover"></video>
 	      </div>
-	      <p class="winnote"> 产品landing页加载动画 · 看板娘拉普兰德陪伴你探索看得见的运行时 </p>
+	      <p class="winnote"> landing页加载动画 · 拉普兰德陪伴你探索看得见的运行时 </p>
 	    </div>
 	  </div>
 	</section>
 <!-- ================= 痛点 ================= -->
 	<section class="sec" id="pain" style="padding-top:40px">
 	  <div class="wrap">
-	    <div class="shead reveal">
+	    <div class="shead reveal" style="margin-bottom:32px">
 	      <div class="kick">PROBLEM · 教学的黑箱</div>
-	      <h2>初学者的两座大山，<br>与 AI 的一池浑水。</h2>
-	      <p class="sub">算法初学者面对的课本是静态的，日常开发者手中的调试是不直观的——根源是同一个：<b>传统编程学习里，我们在编辑器中写代码、在草稿纸上绘图、在控制台里看结果，无法直观感受中间的动态运行过程。而 AI 的加入，好像并没有让水变清。</b></p>
+	      <h2>项目背景</h2>
+		<p class="gap-lead reveal" style="margin-bottom:32px"><span class="en-serif" style="color:var(--accd)">--关于我们为什么要做这个</span></p>
 	    </div>
+		<p class="lede en-serif" style="margin-bottom:48px">
+	     算法初学者面对的课本是静态的，日常开发者手中的调试是不直观的.传统编程学习里，我们在编辑器中写代码、在草稿纸上绘图、在控制台里看结果，无法直观感受中间的动态运行过程。而 AI 的加入，好像并没有让水变清.<br>
+	    </p>		
 	    <div class="grid3">
 	      <div class="panel reveal"><div class="pin" style="padding:26px">
 	        <div class="pain-num"><b>01</b> 静态之山</div>
@@ -424,34 +462,29 @@
 	        <p class="fix">问答模块智能体直接读取 AST 插桩得到的真实执行快照；评审 Agent 对五类事实逐一核查，保证可靠性。</p>
 	      </div></div>
 	    </div>
+	  </div>
 	</section>
-	<!-- ================= 架构 ================= -->
+	<!-- ================= 架构 · Agent 项目背景与立足点 ================= -->
 	<section class="sec" id="arch" style="padding-top:40px">
 	  <div class="wrap">
 	    <blockquote class="pull reveal">
-	      <p>“大多数 AI 编程助手看到的是『代码文本』；<br>JavaTutor 的智能体，看到的是代码<b>真实跑起来之后、每一步的轨迹</b>。<br> 回答「以执行记录为依据」，而不是「仅以源码和经验为依据」。”</p>
+	      <p>“大多数 AI 编程助手看到的只是『代码』；<br>JavaTutor 的智能体，看到的是代码<b>真实运行时每一步的状态</b>。<br>回答「以执行为依据」，而不是「以经验为依据」。”</p>
 	    </blockquote>
-	    <div class="arch3" style="margin-top:56px">
-	      <div class="panel reveal"><div class="pin" style="padding:24px">
-	        <span class="arch-tag">LAYER 1 · 数据源头</span>
-	        <div class="feat-h">执行可视化引擎</div>
-	        <p class="feat-b">AST 插桩 → 内存编译 → 三层沙箱执行。每一步的变量快照被完整记录并持久化。</p>
-	      </div></div>
-	      <div class="a-arr reveal">→</div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin" style="padding:24px">
-	        <span class="arch-tag">LAYER 2 · 教学智能体</span>
-	        <div class="feat-h">多工具 AI Agent</div>
-	        <p class="feat-b">部署于 Coze 平台，按需拉取真实执行证据，调用工具，解答你的真实困惑，和你一起修bug、改代码。</p>
-	      </div></div>
-	      <div class="a-arr reveal" style="--d:.12s">→</div>
-	      <div class="panel reveal" style="--d:.16s"><div class="pin" style="padding:24px">
-	        <span class="arch-tag">LAYER 3 · 信任机制</span>
-	        <div class="feat-h">可信性与可解释</div>
-	        <p class="feat-b">评审 Agent 对步骤号 / 行号 / 变量值 / 堆 id / 输出做五类事实核查；决策痕迹让意图、依据、工具调用、耗时全链路透明。</p>
-	      </div></div>
+	    <p class="gap-lead reveal"><span class="en-serif" style="color:var(--accd)">从「文本代码」到「运行时状态」，存在两层 gap , JavaTutor 对此一一给出回答。</span> </p>
+		 <div class="gapline reveal" style="--d:.08s">
+	        <div class="g-no">GAP 01<small>真实性 · 幻觉</small></div>
+	        <div class="g-gap"><b>ai 对于过程的理解仅停留在推理阶段，从未真实执行代码</b><span>虽然随着迅速迭代，ai 会选择真实执行代码，但这其中的过程真实性依旧存疑。</span></div>
+	        <div class="g-fix"><b>JavaTutor 的回应 </b><span>事前约束：回答必须建立在 step_facts 真实执行得到的数据上，每一项数据使用时都有出处。<br>事后把关：critic 评审 Agent 核查，发现编造即刻修订，verify 核对兜底，主动呈现决策痕迹。</span></div>
+	      </div>
+	      <div class="gapline reveal" style="--d:.16s">
+	        <div class="g-no">GAP 02<small>过程数据不透明</small></div>
+	        <div class="g-gap"><b>执行过程中的变量变化、数据结构，ai 不会主动向用户提供</b><span>即使 ai 会真实写脚本去执行代码看实际运行结果，其中的 thinking chain 和 状态变化 无法主动暴露给用户。很多初学者并不知道应该了解哪些数据，也不知道如何提问。</span></div>
+	        <div class="g-fix"><b>JavaTutor 的回应 </b><span>结果可查证：每条回答自带「决策痕迹」——意图、依据、工具调用及耗时、降级、治理裁决、核对结果逐项留痕，用户可随时查验这个回答是怎么来的。</span></div>
+	      </div>
 	    </div>
-	  </div>
 	</section>
+	<!-- ═══════ 模式分割 · MODE 1 单文件 ═══════ -->
+	<div class="mode-div reveal"><span>MODE 1 · 单文件模式 · SINGLE-FILE</span></div>
 	<!-- ================= ② SEC.01 算法知识库 · 三滚动窗 ================= -->
 	<section class="sec" id="kb">
 	  <div class="wrap">
@@ -473,7 +506,7 @@
 	  <div class="wrap">
 	    <div class="shead reveal">
 	      <div class="kick">SEC.02 / CODE TEMPLATES </div>
-	      <h2>点击模板，即刻置入。</h2>
+	      <h2>点击算法模板，即刻置入。</h2>
 	      <p class="sub">算法模板库 提供经典预设一键载入。减轻认知之外的负担，让你更便捷地学习算法本身。</p>
 	    </div>
 	    <div class="macwin reveal">
@@ -554,7 +587,7 @@
 	  <div class="wrap">
 	    <div class="shead reveal">
 	      <div class="kick">SEC.04 / CFG & MEMORY </div>
-	      <h2>流程图展现执行全貌，内存监控带你了解jvm内部。</h2>
+	      <h2>流程图展现执行全貌，<br>内存监控带你了解jvm内部。</h2>
 	      <p class="sub">Mermaid 实时生成流程图，执行节点高亮；内存面板同步呈现栈帧变量与堆数组。</p>
 	    </div>
 	    <div class="flowrow reveal">
@@ -571,6 +604,7 @@
 	      </div>
 	    </div>
 	    <p class="winnote reveal">FIG.4 · 运行实录 · 左:Mermaid 流程图（当前节点高亮） · 右:栈帧 + 堆数组联动 </p>
+	  </div>
 	</section>
 	<!-- ================= SEC.05 在线测试 · LeetCode 主代码补全（预留空位） ================= -->
 	<section class="sec" id="test">
@@ -587,234 +621,79 @@
 	    <p class="winnote reveal">FIG.5 · 运行实录 · 粘贴主代码 → 自动补全 → 用例逐行比对 </p>
 	  </div>
 	</section>
+	<!-- ═══════ 模式分割 · MODE 2 多文件 ═══════ -->
+	<div class="mode-div reveal"><span>MODE 2 · 多文件模式 · MULTI-FILE</span></div>
 	<!-- ================= SEC.06 多文件模式（预留空位） ================= -->
 	<section class="sec" id="multifile">
 	  <div class="wrap">
 	    <div class="shead reveal">
 	      <div class="kick">SEC.06 / MULTI-FILE PROJECT · 多文件模式</div>
 	      <h2>从单文件到工程，类协作一目了然。</h2>
-	      <p class="sub">多文件项目整体运行、UML 静态分析与跨文件调试，单文件专注算法可视化，多文件专注类协作关系解释。</p>
+	      <p class="sub">单文件专注算法可视化，而多文件专注类协作关系解释。多文件项目整体运行、UML 静态分析与跨文件调试。</p>
 	    </div>
 	    <div class="panel reveal" style="--d:.08s">
 	      <div class="pin">
-	        <div class="ph"><span>多文件模式</span><span>DEMO 待补</span></div>
-	        <div class="slot-empty"><b>预留空位</b><span>多文件项目 · 内容待补充</span></div>
+	        <div class="ph"><span>多文件模式</span><span>实录 · 44s</span></div>
+	        <div class="macwin">
+	          <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">多文件模式 — UML 导航</span><span class="mw-live">LIVE</span></div>
+	          <video src="videos/multifile-uml-nav.mp4" loop muted playsinline preload="none" style="aspect-ratio:1816/1080;object-fit:cover"></video>
+	        </div>
 	      </div></div>
+		<p class="winnote reveal">FIG.6 · 运行实录 · 多文件模式自动生成 UML ·  </p>
+
 	  </div>
 	</section>
+	<!-- ═══════ 模式分割 · MODE 3 智能体 ═══════ -->
+	<div class="mode-div reveal"><span>MODE 3 · 智能体教学 · AI AGENT</span></div>
 	<!-- ================= SEC.07 AI 智能体（深色核心舱，保留） ================= -->
 	<section class="sec" id="agent">
 	  <div class="wrap">
 	    <div class="shead reveal">
 	      <div class="kick">SEC.07 / AI AGENT CORE </div>
 	      <h2>Agent 智能体教学</h2>
-	      <p class="sub">部署于 Coze 平台，以 LangGraph 状态图组织。它不猜第 8 步发生了什么——<b style="color:var(--accd)">它去看。</b></p>
+	      <p class="sub">部署于 Coze 平台，以 LangGraph 状态图组织。负责快捷提供报错解答和教学任务</p>
 	    </div>
-	    <div class="panel reveal" style="margin-bottom:20px"><div class="pin" style="padding:22px">
-	      <div class="pg-t">▍处理流水线 · LANGGRAPH 状态图</div>
-	      <div class="pgroup"><span class="pnode">parse_context</span><span class="pnode">context_compaction</span><span class="pnode">analyze_code</span><span class="pnode">load_session</span><span class="pnode">retrieve_knowledge</span></div>
-	      <div class="parrows">▼</div>
-	      <div class="pgroup"><span class="pnode">build_context <b style="color:var(--accd)">· GSSC 上下文工程</b></span></div>
-	      <div class="parrows">▼</div>
-	      <div class="pgroup"><span class="pnode hot">main_agent · 工具循环 ≤3 轮</span><span class="pnode hot">critic · 五类核查</span><span class="pnode hot">revise · 单轮修订</span></div>
-	      <div class="parrows">▼</div>
-	      <div class="pgroup"><span class="pnode">save_session</span><span class="pnode">build_final</span></div>
-	    </div></div>
-	    <div class="grid2" style="margin-bottom:20px">
-	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>信息分层 · 三条路线</span><span>FIG.7-1</span></div>
-	        <div class="tblwrap" style="padding:6px 10px 12px">
-	          <table class="tbl">
-	            <tr><th>信息</th><th>走法</th><th>理由</th></tr>
-	            <tr><td>知识 RAG · 会话记忆</td><td style="font-family:var(--mono);font-size:11.5px;color:var(--accd)">上下文工程 · 预取注入</td><td>小而固定，确定、可核查、省轮次</td></tr>
-	            <tr><td>整体执行上下文</td><td style="font-family:var(--mono);font-size:11.5px;color:var(--accd)">按需工具 fetch_execution_context</td><td>量大随请求变化，先存 state 再展示</td></tr>
-	            <tr><td>单步执行证据</td><td style="font-family:var(--mono);font-size:11.5px;color:var(--accd)">JIT 工具 step_facts</td><td>随问题变化，回答时才取</td></tr>
-	          </table>
-	        </div>
-	      </div></div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>工具集 · 三个工具，各司其职</span><span>FIG.7-2</span></div>
-	        <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px">
-	          <div><span class="pnode" style="margin:0 0 6px">analyze_code</span><p class="feat-b" style="font-size:12.5px">确定性节点 · 有代码必跑。产出复杂度 / 算法 / 数据结构标签，写入工作记忆（importance 0.85）。</p></div>
-	          <div><span class="pnode hot" style="margin:0 0 6px">fetch_execution_context</span><p class="feat-b" style="font-size:12.5px">按 run_id 拉取整体执行上下文，先存 state.fetched_context，再按需展示。</p></div>
-	          <div><span class="pnode hot" style="margin:0 0 6px">step_facts</span><p class="feat-b" style="font-size:12.5px">返回指定步骤的原始证据 + <b style="color:var(--accd)">程序化 diff</b>，不调用 LLM：<code style="font-family:var(--mono);color:var(--ok)">arr: [5,3,1] → [3,5,1]</code></p></div>
-	        </div>
-	      </div></div>
-	    </div>
-	    <div class="panel reveal" style="margin-bottom:20px"><div class="pin" style="padding:22px">
-	      <div class="pg-t">▍反幻觉闭环 · 证据 → 生成 → 核查 → 修订</div>
-	      <div class="loop">
-	        <div class="loop-node"><div class="loop-t">证据</div><div class="loop-s">step_facts · 程序化 diff<br>由确定性代码计算，<br>而非让模型「回忆」</div></div>
-	        <span class="loop-a">→</span>
-	        <div class="loop-node hot"><div class="loop-t">生成</div><div class="loop-s">main_agent · 工具循环<br>基于真实执行快照作答</div></div>
-	        <span class="loop-a">→</span>
-	        <div class="loop-node hot"><div class="loop-t">核查</div><div class="loop-s">critic · 评审 Agent<br>五类事实逐一比对</div></div>
-	        <span class="loop-a">→</span>
-	        <div class="loop-node"><div class="loop-t">修订</div><div class="loop-s">revise · 单轮修订<br>发现编造即触发</div></div>
-	      </div>
-	      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-	        <span class="chip" style="border-color:var(--acc);color:var(--accd)">① 步骤号</span>
-	        <span class="chip" style="border-color:var(--acc);color:var(--accd)">② 行号</span>
-	        <span class="chip" style="border-color:var(--acc);color:var(--accd)">③ 变量值</span>
-	        <span class="chip" style="border-color:var(--acc);color:var(--accd)">④ 堆 id</span>
-	        <span class="chip" style="border-color:var(--acc);color:var(--accd)">⑤ 输出</span>
+	    <!-- 一 · 智能体状态图 -->
+	    <div class="pg-t" style="margin:0 0 18px;font-size:12.5px;letter-spacing:.22em">▍智能体状态图 · AGENT STATE GRAPH</div>
+	    <div class="panel reveal" style="margin-bottom:44px"><div class="pin">
+	      <div class="ph"><span>Agent 状态图 </span><span>FIG.7-1</span></div>
+	      <div style="padding:16px 18px 18px">
+	        <img src="agent-state-machine.png" alt="Agent 状态机全景 · main_agent ⇄ guard ⇄ run_tools 工具环 + critic / verify 收束链" style="display:block;width:100%;height:auto;background:#fff;border:1px solid var(--line2);border-radius:var(--r-sm)">
 	      </div>
 	    </div></div>
-	    <div class="grid2">
-	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>GSSC 上下文工程</span><span>FIG.7-3</span></div>
-	        <div style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
-	          <p class="feat-b"><b style="color:var(--accd)">Gather 聚合</b> — 系统指令 + 项目知识 RAG top-3 + Java 语料 + 工作记忆 + 执行数据 + 最近 5 轮对话</p>
-	          <p class="feat-b"><b style="color:var(--accd)">Select 择优</b> — 评分 = 相关性 ×0.7 + 新近性 ×0.3，贪心填充 token 预算</p>
-	          <p class="feat-b"><b style="color:var(--accd)">Structure 分区</b> — [Role&amp;Policies][Task][Evidence][Memory][Context][Output]</p>
-	          <p class="feat-b"><b style="color:var(--accd)">Compress 压缩</b> — 超预算按分区截断或摘要，标注 […已压缩…]</p>
-	        </div>
-	      </div></div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>决策痕迹 · 每条回答附带</span><span>FIG.7-4</span></div>
-	        <div class="json"><span class="jk">"intent"</span><span class="jp">:</span> <span class="js">"解释第 8 步 arr 的变化原因"</span><span class="jp">,</span>
-	<span class="jk">"confidence"</span><span class="jp">:</span> <span class="jn">0.92</span><span class="jp">,</span>
-	<span class="jk">"tool_calls"</span><span class="jp">:</span> <span class="jp">[</span>{ <span class="jk">"tool"</span><span class="jp">:</span> <span class="js">"fetch_execution_context"</span><span class="jp">,</span> <span class="jk">"ms"</span><span class="jp">:</span> <span class="jn">118</span> <span class="jp">},</span>
-	                { <span class="jk">"tool"</span><span class="jp">:</span> <span class="js">"step_facts"</span><span class="jp">,</span> <span class="jk">"step"</span><span class="jp">:</span> <span class="jn">8</span><span class="jp">,</span> <span class="jk">"ms"</span><span class="jp">:</span> <span class="jn">41</span> <span class="jp">}],</span>
-	<span class="jk">"grounding"</span><span class="jp">:</span> <span class="js">"verified · 五类核查通过"</span><span class="jp">,</span>
-	<span class="jk">"tokens"</span><span class="jp">:</span> { <span class="jk">"in"</span><span class="jp">:</span> <span class="jn">1830</span><span class="jp">,</span> <span class="jk">"out"</span><span class="jp">:</span> <span class="jn">412</span> <span class="jp">},</span>
-	<span class="jk">"duration_ms"</span><span class="jp">:</span> <span class="jn">2130</span><span class="jp">,</span> <span class="jk">"degraded"</span><span class="jp">:</span> <span class="jb">false</span></div>
-	      </div></div>
-	    </div>
-	    <!-- 与学生对话 · 两个高频瞬间 -->
-	    <div class="pg-t" style="margin:24px 0 12px">▍与学生对话 · 两个高频瞬间</div>
-	    <div class="grid2" style="margin-bottom:20px">
-	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>报错现场 · 一键求助</span><span>FIG.7-5</span></div>
-	        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px">
-	          <div class="codebox" style="border:1px solid var(--line2);background:var(--white)">
-	            <div class="cl"><span class="ln">6</span><code><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt;= arr.length; i++) {</code></div>
-	            <div class="cl"><span class="ln">7</span><code>System.out.println(arr[i]);</code></div>
-	            <div class="cl cur"><span class="ln">!</span><code style="color:var(--rose);font-size:11px">✗ ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5</code></div>
-	          </div>
-	          <div style="display:flex;justify-content:flex-end">
-	            <span class="btn btn-p" style="padding:8px 14px;font-size:11px">✦ 让 Agent 帮我看看</span>
-	          </div>
-	          <div style="border:1px solid var(--line2);border-left:3px solid var(--acc);background:var(--white);padding:12px 14px">
-	            <div style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--accd);margin-bottom:6px">JAVATUTOR · 实时回应 · 依据第 6 步执行快照</div>
-	            <p class="feat-b" style="font-size:12.5px">循环条件 <code style="font-family:var(--mono)">i &lt;= arr.length</code> 让 i 走到了 <b style="color:var(--rose)">5</b>，而 arr 合法下标只有 0–4。step_facts diff：<code style="font-family:var(--mono);color:var(--ok)">i: 4 → 5</code>——越界就发生在这一步，把 <code style="font-family:var(--mono)">&lt;=</code> 改成 <code style="font-family:var(--mono)">&lt;</code> 即可。</p>
-	          </div>
-	          <p class="feat-b" style="font-size:12px;color:var(--ink3)">报错处一键唤起，回答自带出错那一步的执行证据——不是泛泛的「请检查数组越界」，而是「i 在第 6 步越过了哪个界」。</p>
-	        </div>
-	      </div></div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>一句话修改 · 弹窗确认</span><span>FIG.7-6</span></div>
-	        <div style="padding:16px 18px;display:flex;flex-direction:column;gap:12px">
-	          <div style="display:flex;justify-content:flex-end">
-	            <span style="background:var(--ink);color:#fff;font-size:12.5px;padding:8px 14px;border-radius:18px 18px 5px 18px">请帮我修改这段代码</span>
-	          </div>
-	          <div style="border:1px solid var(--line2);background:var(--white)">
-	            <div class="ph"><span>AGENT 请求修改 · 1 处改动</span><span style="color:var(--warn)">待确认</span></div>
-	            <div class="codebox" style="padding:8px 0">
-	              <div class="cl" style="background:rgba(214,69,93,.07)"><span class="ln">-</span><code style="color:var(--rose)"><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt;= arr.length; i++) {</code></div>
-	              <div class="cl" style="background:rgba(47,169,107,.08)"><span class="ln">+</span><code style="color:var(--ok)"><span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; arr.length; i++) {</code></div>
-	            </div>
-	            <div style="padding:0 14px 10px;font-family:var(--mono);font-size:11px;color:var(--ink3)">依据 · step_facts 第 6 步 i: 4 → 5 越界 → 建议改为半开区间</div>
-	            <div style="display:flex;gap:8px;padding:0 14px 14px">
-	              <span class="btn btn-p" style="padding:7px 13px;font-size:10.5px">✓ 应用修改</span>
-	              <span class="btn btn-g" style="padding:7px 13px;font-size:10.5px;border:1px solid var(--line)">查看执行依据</span>
-	            </div>
-	          </div>
-	          <p class="feat-b" style="font-size:12px;color:var(--ink3)">一句话发起修改，Agent 以 diff 小窗请求确认——改哪里、为什么改、依据哪一步，全摆在明处，你点头它才落笔。</p>
-	        </div>
-	      </div></div>
-	    </div>
-	    <!-- V-06 -->
-	    <div class="panel reveal" style="margin-top:20px">
-	      <div class="pin">
-	        <div class="ph"><span>演示视频 · AI 问答与决策痕迹</span><span class="vtag" data-tag="V-06 · 演示视频槽">V-06 · 演示视频槽</span></div>
-	        <div class="vslot" data-slot="v06">
-	          <div class="vph">
-	            <span class="vph-corner">SLOT V-06</span>
-	            <button class="vph-btn" tabindex="-1" title="视频待填充">▶</button>
-	            <div class="vph-cap">
-	              <span class="vph-t">演示视频 · 待填充</span>
-	              <span class="vph-d">建议内容:基于当前执行位置提问 → 决策痕迹 JSON 展开 → 编辑建议卡一键应用 · 30–45s<br>（或改用「会话回放」方案：以真实决策痕迹 JSON 驱动，无需录屏）</span>
-	            </div>
-	          </div>
-	        </div>
+	    <!-- 二 · Agent 使用三大场景 -->
+	    <div class="pg-t" style="margin:46px 0 24px;font-size:12.5px;letter-spacing:.22em">▍Agent 使用三大场景 · CORE SCENARIOS</div>
+	    <div class="scene reveal">
+	      <div class="scene-h"><b>场景 1 · 运行报错排查</b><span>实录 </span></div>
+	      <p class="feat-b" style="margin:8px 0 12px">运行报错时，<b style="color:var(--accd)">一键发送「让 Agent 帮我看」</b>——agent 指出出错那一步，并附带实际数据作为依据。</p>
+	      <div class="macwin">
+	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">运行报错排查 — 让 Agent 帮我看</span><span class="mw-live">LIVE</span></div>
+	        <video src="videos/agent-scene1-error.mp4" loop muted playsinline preload="none" style="aspect-ratio:1824/1080;object-fit:cover"></video>
 	      </div>
+		  <p class="winnote reveal">FIG.7.1 · 运行实录 · 运行报错排查 · agent 一键修复 </p>
+
+	    </div>
+	    <div class="scene reveal" style="--d:.08s">
+	      <div class="scene-h"><b>场景 2 · 代码一键修改</b><span>实录 · </span></div>
+	      <p class="feat-b" style="margin:8px 0 12px">Agent 提供修改方案，用户确认后<b style="color:var(--accd)">一键应用并修正代码</b></p>
+	      <div class="macwin">
+	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">代码一键修改 — 方案确认 · 一键应用</span><span class="mw-live">LIVE</span></div>
+	        <video src="videos/agent-scene2-fix.mp4" loop muted playsinline preload="none" style="aspect-ratio:1728/1013;object-fit:cover"></video>
+	      </div>
+		<p class="winnote reveal">FIG.7.2 · 运行实录 · 代码逻辑错误诊断 · agent 指出问题并提供方案 · 一键应用正确代码</p>
+	    </div>
+	    <div class="scene reveal" style="--d:.16s">
+	      <div class="scene-h"><b>场景 3 · Agent 解说当前步</b><span>实录 </span></div>
+	      <p class="feat-b" style="margin:8px 0 12px">Agent 提供基础问答，告诉你这一步和争端代码在做什么，并<b style="color:var(--accd)">提示导航内存状态与数据结构，快捷跳转</b></p>
+	      <div class="macwin">
+	        <div class="mw-bar"><span class="mw-dots"><i></i><i></i><i></i></span><span class="mw-title">当前步详解 — 内存 / 数据结构导航</span><span class="mw-live">LIVE</span></div>
+	        <video src="videos/agent-scene3-step.mp4" loop muted playsinline preload="none" style="aspect-ratio:1814/1080;object-fit:cover"></video>
+	      </div>
+		<p class="winnote reveal">FIG.7.3 · 运行实录 · ai 解说当前步骤和整段代码 · 跳转内存监控/数据结构</p>
 	    </div>
 	    <blockquote class="pull reveal" style="margin-top:56px">
-	      <p>“教学的前提是信任，<br>信任的前提是<b>透明</b>。”</p>
-	      <footer>—— 所以我们把智能体的思考过程，连同它的证据与耗时，一并交还给你。</footer>
+	      <p>“教学的前提是信任，<br>信任的前提是<b>真实和透明</b>。”</p>
 	    </blockquote>
-	  </div>
-	</section>
-	<!-- ================= SEC.08 效果验证（保留） ================= -->
-	<section class="sec" id="eval">
-	  <div class="wrap">
-	    <div class="shead reveal">
-	      <div class="kick">SEC.08 / EVALUATION · 数据驱动迭代</div>
-	      <h2>效果验证</h2>
-	      <p class="sub">双轨评估：组件级确定性指标（pytest 门槛）+ Coze 平台 LLM-as-Judge 四维评分（相关性 / Grounding / 上下文污染 / 教学正确性），每轮存档 summary.json 对比上一轮。</p>
-	    </div>
-	    <div class="grid2">
-	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>三轮真实迭代档案</span><span>FIG.8-1</span></div>
-	        <div class="tblwrap" style="padding:6px 10px 14px">
-	          <table class="tbl">
-	            <tr><th>轮次</th><th>Judge 均分</th><th>Grounding</th><th>工具调用准确率</th><th>关键变化</th></tr>
-	            <tr><td>Round-1</td><td>3.52</td><td>3.10</td><td>0.48</td><td>基线</td></tr>
-	            <tr><td>Round-2</td><td>3.00</td><td>2.32</td><td>0.58</td><td>多工具架构重构 + 领域本体 + RAG</td></tr>
-	            <tr><td>Round-3</td><td>3.04</td><td>2.52</td><td style="color:var(--accd);font-weight:700">0.81</td><td>fetch 前置自动调用 + 提示词强化</td></tr>
-	          </table>
-	        </div>
-	      </div></div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>工具调用准确率走势</span><span>FIG.8-2</span></div>
-	        <div style="padding:22px 20px">
-	          <div class="bar-row"><span class="bar-label">Round-1</span><div class="bar-track"><div class="bar" style="--w:48%"></div></div><span class="bar-val">0.48</span></div>
-	          <div class="bar-row"><span class="bar-label">Round-2</span><div class="bar-track"><div class="bar" style="--w:58%"></div></div><span class="bar-val">0.58</span></div>
-	          <div class="bar-row"><span class="bar-label">Round-3</span><div class="bar-track"><div class="bar" style="--w:81%"></div></div><span class="bar-val">0.81</span></div>
-	          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
-	            <span class="chip">fetch 调用率 <b>4/16 → 15/16</b></span>
-	            <span class="chip">step_facts 准确率 <b>0.94</b></span>
-	            <span class="chip">Grounding 核对 <b>0.94</b></span>
-	          </div>
-	        </div>
-	      </div></div>
-	    </div>
-	  </div>
-	</section>
-	<!-- ================= 工程质量（保留） ================= -->
-	<section class="sec" id="eng" style="padding-top:20px">
-	  <div class="wrap">
-	    <div class="shead reveal">
-	      <div class="kick">ENGINEERING · 工程质量</div>
-	      <h2>被测试与沙箱守护的信任</h2>
-	    </div>
-	    <div class="grid4 reveal" style="margin-bottom:20px">
-	      <div class="panel sm"><div class="pin" style="padding:20px;text-align:center"><div class="bignum">128</div><div class="bigcap">前端 VITEST</div></div></div>
-	      <div class="panel sm"><div class="pin" style="padding:20px;text-align:center"><div class="bignum">83</div><div class="bigcap">后端 JUNIT</div></div></div>
-	      <div class="panel sm"><div class="pin" style="padding:20px;text-align:center"><div class="bignum">205</div><div class="bigcap">智能体 PYTEST</div></div></div>
-	      <div class="panel sm"><div class="pin" style="padding:20px;text-align:center"><div class="bignum" style="color:var(--ok)">100%</div><div class="bigcap">纳入提交门槛</div></div></div>
-	    </div>
-	    <div class="grid2">
-	      <div class="panel reveal"><div class="pin">
-	        <div class="ph"><span>TDD 流程</span><span>FIG.9-1</span></div>
-	        <div style="padding:22px 20px">
-	          <div class="flow"><span class="fs">spec</span><span class="fa">→</span><span class="fs">plan</span><span class="fa">→</span><span class="fs">devlog</span><span class="fa">→</span><span class="fs">review</span><span class="fa">→</span><span class="fs" style="border-color:var(--acc);color:var(--accd)">每轮评估留档</span></div>
-	          <p class="feat-b" style="margin-top:16px">docs/devlog 开发日志 · docs/reviews 审查记录 · docs/DESIGN.md 设计规约，随代码提交登记。密钥不进仓库，结构化日志 request-id 脱敏。</p>
-	        </div>
-	      </div></div>
-	      <div class="panel reveal" style="--d:.08s"><div class="pin">
-	        <div class="ph"><span>三层沙箱</span><span>FIG.9-2</span></div>
-	        <div style="padding:16px 20px 20px">
-	          <table class="tbl">
-	            <tr><th>层</th><th>拦截内容</th></tr>
-	            <tr><td>① AST 静态</td><td>import 白名单 · System.exit / Runtime.exec / 反射黑名单 · FileWriter / Socket / Thread 类型黑名单</td></tr>
-	            <tr><td>② 编译隔离</td><td>InMemoryCompiler · 源码编译在内存中，不落盘</td></tr>
-	            <tr><td>③ 运行时</td><td>SafeSecurityManager 拦截文件写删 / 外部命令 / 非 localhost 网络 · 线程池执行 · future.get(5s) 超时</td></tr>
-	          </table>
-	        </div>
-	      </div></div>
-	    </div>
 	  </div>
 	</section>
 	<!-- ================= 团队（保留） ================= -->
@@ -827,8 +706,8 @@
 	    <div class="grid2">
 	      <div class="panel sm reveal"><div class="pin member">
 	        <h3>黄杰 <small>team leader</small> <a class="gh" href="https://github.com/holycandle" target="_blank" rel="noopener">GitHub</a></h3>
-	        <div class="mrole">项目统筹 · 后端 AI 集成 · Coze 智能体架构 · 工程基建</div>
-	        <ul><li><b>Coze 智能体架构</b>：主导 <code>javatutor-coze</code> 仓库，完成多工具架构、Harness 工程（图内 ReAct 真环 / 治理门闩 / 收束轮 / HITL 内核 / 运行时确定性核对）、输出指令通道（视角导航 + 编辑建议块）、评审 Agent、双轨评估系统、RAG、GSSC 上下文工程、会话工作记忆的整体设计与实现</li><li><b>后端 AI 集成</b>：AI 解说多 Provider 链路（流式 / 限流重试）、Coze Chat API 接入与转发</li><li><b>前端 AI 交互</b>：决策痕迹面板、流式面板、代码优化卡片（方案卡 / 整文件覆盖 / 门禁与撤销）、报错转发入口、视角导航卡片、对话时间线</li><li><b>工程化</b>：CI/CD、Codespaces、一键启动脚本、部署脚本</li></ul>
+	        <div class="mrole">项目统筹 · Coze 智能体架构 · 后端 AI 集成 · 工程基建</div>
+	        <ul><li><b>Coze 智能体架构</b>：主导 <code>javatutor-coze</code> 仓库：多工具架构、Harness 工程（图内 ReAct 真环 / 治理门闩 / 收束轮 / HITL 内核 / 运行时确定性核对）、输出指令通道（视角导航 + 编辑建议块）、评审 Agent、双轨评估系统、RAG、GSSC 上下文工程、会话工作记忆的整体设计与实现</li><li><b>后端 AI 集成</b>：AI 解说多 Provider 链路（流式 / 限流重试）、Coze Chat API 接入与转发</li><li><b>前端 AI 交互</b>：决策痕迹面板、流式面板、代码优化卡片（方案卡 / 整文件覆盖 / 门禁与撤销）、报错转发入口、视角导航卡片、对话时间线</li><li><b>控制流图</b>：基于 Mermaid 的流程图实时生成，执行时呼吸灯高亮，全屏 / Zoom / SVG 下载，方法调用钻取</li><li><b>测试模式</b>：支持粘贴 <code>class Solution { method }</code> 格式代码片段，自动补 import 和 main 包装，多种参数类型输入</li><li><b>工程化</b>：CI/CD、Codespaces、一键启动脚本、部署脚本</li></ul>
 	      </div></div>
 	      <div class="panel sm reveal" style="--d:.06s"><div class="pin member">
 	        <h3>沈子粟 <a class="gh" href="https://github.com/Curse-strickland" target="_blank" rel="noopener">GitHub</a></h3>
@@ -842,8 +721,8 @@
 	      </div></div>
 	      <div class="panel sm reveal" style="--d:.18s"><div class="pin member">
 	        <h3>向鸿桂 <a class="gh" href="https://github.com/tomorin1214" target="_blank" rel="noopener">GitHub</a></h3>
-	        <div class="mrole">前端 UI / 视觉 · 壁纸系统 · Coze 提示词调优</div>
-	        <ul><li><b>界面与视觉优化</b>：字体、配色、顶栏合并、运行栏拖拽、多文件图例与类型标识</li><li><b>壁纸系统</b>：图片 / 视频 / 自定义编辑器</li><li><b>Coze 侧</b>：<code>fetch_execution_context</code> 调用率提升、Judge 兼容 reasoning 模型、领域本体核对与扩充</li></ul>
+	        <div class="mrole">界面与视觉 · 壁纸与背景系统 · 全局状态提示 · 控制台输出面板 · Coze 侧调优</div>
+	        <ul><li><b>界面与视觉优化</b>：统一 Maple Mono 字体（本地自托管）、代码区蓝黑配色、顶栏合并为单条品牌栏、运行栏左右 / 对角拖拽调宽、多文件可视化图例与类型标识</li><li><b>壁纸与背景系统</b>：预设壁纸 + 自定义图片 / 视频背景 + 网格背景 + 背景音乐 + 卡片透明度调节</li><li><b>全局状态提示</b>：全局 loading 动画 + 错误提示条（运行类错误常驻展示，一键转发给 agent 诊断）</li><li><b>控制台输出面板</b>：终端风格深色面板，程序输出实时捕获，可折叠 / 展开</li><li><b>Coze 侧调优</b>：<code>fetch_execution_context</code> 调用率提升、Judge 兼容 reasoning 模型、领域本体核对与扩充</li></ul>
 	      </div></div>
 	    </div>
 	  </div>
@@ -853,14 +732,14 @@
   <div class="wrap">
     <div class="shead reveal">
       <div class="kick">EPILOGUE / 写给 AI NATIVE 的一代</div>
-      <h2>AI 时代，答案变得很便宜，但理解力依然很贵。</h2>
+      <h2>AI 时代，答案变得很便宜，<br>但理解力依然很贵。</h2>
     </div>
     <div class="epi reveal">
-      <p>蒋炎岩老师在《如何成为 AI Native 的大学生》里说，AI 可以降低学习的痛苦，却不该替你完成思考；它可以当 copilot，但不能当大脑。</p>
+      <p class="gap-lead reveal"><span class="en-serif" style="color:var(--accd)">蒋炎岩老师在《如何成为 AI Native 的大学生》里说，AI 可以降低学习的痛苦，却不该替你完成思考；它可以当 copilot，但不能当大脑。</span></p>
       <p>初学 Java 最难的，常常不是语法，而是看不见程序怎么一步步运行：变量何时改变，栈帧如何进出，递归怎样展开，对象何时创建，yield 为什么让函数停住。Everything is a state machine。代码看不懂，很多时候不是你不够聪明，而是没人把状态迁移摊开给你看。</p>
       <p>我们想做的，就是把这层“看不见”变成“看得见”。让你亲手追一次执行，亲眼看一次递归，亲自补上一个缺口。AI 可以帮你查、帮你讲、帮你生成例子；但真正的理解，仍然要你自己走一遍。底大一级压死人，Scaling Law 对人也成立——你喂给自己的知识、练习和反馈，最终会长成你的直觉。</p>
       <p>所以，欢迎你，正在为学 Java 而努力的你。愿你在这里不只拿到一段能跑的代码，而是收获一次“原来如此”的正反馈。十次困惑里只要有一次被点亮，它就会推着你继续往前。</p>
-      <p class="epi-final">AI 能替你生成答案，替不了你长出直觉。<br>让 AI 成为你的下手和字典，别让它替你思考；让工具放大你的努力，而不是替代它。</p>
+	  <p class="gap-lead reveal"><span class="en-serif" style="color:var(--accd)">AI 能替你生成答案，替不了你长出直觉。<br>让 AI 成为你的助手，别让它替你思考。</span></p>
       <div class="epi-sign">—— JavaTutor 团队 · 2026</div>
     </div>
   </div>
@@ -879,10 +758,10 @@
 	const LOGO_CONFIG = { img: 'logo-light.png' };   // 例: 'assets/logo.svg'
 	/* 外链 */
 	const LINKS = { site: 'https://javatutor.cn', repo: 'https://github.com/Curse-strickland/javatutor' };
-	/* 视频槽（V-06 Agent）。V-01~V-05 已由设计稿的实时演示取代。
+	/* 视频槽（Agent 场景 agent-v01~v04）。V-01~V-05 已由设计稿的实时演示取代。
 	   trace 回放通道沿用上一版 TracePlayer 代码，粘贴到本文件末尾即可共存 */
 	const SLOT_SOURCES = {
-	  // v06: { video: 'videos/agent.mp4', poster: 'videos/agent.jpg' },
+	  // agent-v01 / v02 / v03 / multi-01 已直接以 .macwin 小窗嵌入（与其他展示视频同款，入视口自动播放）
 	};
 	/* ═══════════════════════ Logo ═══════════════════════ */
 	const DEFAULT_LOGO_SVG =
