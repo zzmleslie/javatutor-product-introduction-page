@@ -1,0 +1,33 @@
+name: Deploy Intro
+
+on:
+  push:
+    branches: [master]        # 本仓默认分支是 master，不是 main
+  workflow_dispatch:           # 允许手动触发（首次上线时用）
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 部署发布页到服务器
+        uses: easingthemes/ssh-deploy@v5.1.1
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+
+          # --delete 在这里是**想要的**：发布页目录专属于它自己，可安全镜像。
+          # 转码后的 videos/ 在仓内，随 rsync 一起同步；--delete 会正确清理删掉的旧文件。
+          ARGS: "-avz --delete --exclude=.git --exclude=.github --exclude=videos-orig"
+
+          SOURCE: "./"
+          TARGET: "/var/www/javatutor-intro/"
+
+          SCRIPT_AFTER: |
+            sudo chmod -R a+rX /var/www/javatutor-intro
