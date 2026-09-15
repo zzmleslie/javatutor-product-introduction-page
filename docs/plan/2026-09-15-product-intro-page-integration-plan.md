@@ -14,8 +14,16 @@
 > 改为「按使用流量 + 峰值 100 Mbps」。**主站代码零改动。**
 > 备选方案（路径分区）见 §7，后续可选的 CDN 迁移见 §6。
 >
-> **状态：T0 现场取证已于 2026-09-15 完成**（见 §4），仅剩 T0-5（计费切换是否闪断）需控制台确认，
-> 不构成阻断。计划中所有涉及线上环境的描述均已按实测结果校正。
+> **状态（2026-09-15 更新）**：**Task 1 / 2 / 3 / 4 / 5 / 6 均已完成并实测验收**
+> —— 计费已切按流量（T0-5 已解：无闪断、IP 未变）、DNS 已解析、nginx 与证书已就位、
+> 视频 183MB→12.4MB、字体已自托管、workflow 已落盘。
+> 冒烟 S5（码率）/ S7（防盗链）/ S8（计费生效）/ S9（R1 隔离）**已通过**。
+>
+> **仅剩两个外部前置，均非技术问题**：
+> ① 控制台设「消费预警」（API 不可达，见 Task 1 第 1 步，**真页上线前必做**）；
+> ② 本仓 4 个 Actions secrets（当前 `total_count: 0`，且本账号 `admin: false` 无权代配，见 Task 6）。
+> 两者就位后 push 到 `master` 即完成 Task 6/7 的剩余部分（S1/S3/S4/S6/S10/S11）。
+> 计划中所有涉及线上环境的描述均已按实测结果校正。
 
 ---
 
@@ -147,7 +155,7 @@ ECS 公网计费：固定带宽 3 Mbps  →  按使用流量 + 峰值 100 Mbps
 | T0-2 | 主站真实 root | **`/var/www/html` →（软链）→ `/opt/javatutor/dist`**，**不是**仓库里写的 `/var/www/javatutor`（R3 确认） | ✅ |
 | T0-3 | 后端服务用户 | `javatutor` | ✅ |
 | T0-4 | 磁盘余量 | 系统盘 40G，**可用 26G** —— 远超需要 | ✅ |
-| T0-5 | 计费切换是否受限 / 是否闪断 | — | ❌ **唯一遗留**，需控制台确认 |
+| T0-5 | 计费切换是否受限 / 是否闪断 | **实测无闪断、无 IP 变更**：切换后公网 IP 仍为 `112.124.67.74`，`javatutor.cn` / `www` / `intro` 全部 `200`，响应 0.08–0.16s | ✅ 2026-09-15 已执行（见 Task 1） |
 | T0-6 | certbot 自动续期 | `certbot.timer` 活跃（12h 周期，最近一次 4h56m 前）；`/etc/letsencrypt/live/` 下只有 `javatutor.cn` 一份证书 | ✅ |
 
 **T0 推翻/修正了本计划原先的三处臆测**（§2、§3、§5 已同步更正）：
@@ -169,12 +177,31 @@ ECS 公网计费：固定带宽 3 Mbps  →  按使用流量 + 峰值 100 Mbps
 ### Task 1：ECS 带宽计费切换 + 费用预警
 
 1. 阿里云控制台 → 费用中心 → **设置消费预警（建议 50 元）**。**先做这一步，再切计费模式。**
+   > ⚠️ **这一步不能用 API 代做**：枚举 `bssopenapi` 全部 94 个 API，只有
+   > `SetResellerUserAlarmThreshold` / `QueryResellerUserAlarmThreshold` 沾边，而这两个是
+   > **分销商专用**，普通账号（RAM 用户）调不了；`aliyun budget` 这个 product 不存在。
+   > **只能人工在控制台设。**
 2. 控制台 → ECS → 实例 → 网络与安全组 → 带宽 →
    计费方式改为 **按使用流量**，峰值带宽设为 **100 Mbps**。
+
+   CLI 等价命令（参数名是 `NetworkChargeType`，**不是** `InternetChargeType`）：
+
+   ```bash
+   aliyun ecs ModifyInstanceNetworkSpec --InstanceId i-bp18peop1g8ir00s8phq \
+     --NetworkChargeType PayByTraffic --InternetMaxBandwidthOut 100 --InternetMaxBandwidthIn 100
+   ```
 3. 观察是否闪断（按 T0-5 的结论选择执行时段）。
 
 **验收**：控制台显示「按使用流量 / 峰值 100 Mbps」；`curl -o /dev/null -w '%{speed_download}\n' https://javatutor.cn/`
 的下载速度**显著高于 3 Mbps 的量级**（约 375 KB/s）。
+
+> **执行记录（2026-09-15）**：计费切换**已执行**，OrderId `2003838435460463`。
+> 实测 `InternetChargeType=PayByTraffic`、`BwOut=BwIn=100`、公网 IP 未变、无闪断。
+> 测速对照（同一客户端、同一 50MB 测试文件）：切换前 **432 KB/s（顶在 3 Mbps 上限）** →
+> 切换后 **1.66 MB/s ≈ 13.3 Mbps**，3.8×。**13.3 Mbps 是本机下行上限，非服务端上限** ——
+> 判据是切换前恰好被钉在 3 Mbps，切换后不再被钉住。
+>
+> **消费预警尚未设置**（API 不可达，见第 1 步）。发布页真页上线（Task 6）前必须在控制台补上。
 
 **回滚**：改回固定带宽 3 Mbps（可逆）。
 
@@ -412,7 +439,7 @@ jobs:
 
           # --delete 在这里是**想要的**：发布页目录专属于它自己，可安全镜像。
           # 转码后的 videos/ 在仓内，随 rsync 一起同步；--delete 会正确清理删掉的旧文件。
-          ARGS: "-avz --delete --exclude=.git --exclude=.github --exclude=videos-orig"
+          ARGS: "-avz --delete --exclude=.git --exclude=.github --exclude=videos-orig --exclude=docs --exclude=AGENT.md"
 
           SOURCE: "./"
           TARGET: "/var/www/javatutor-intro/"
@@ -423,6 +450,21 @@ jobs:
 
 **前置**：在本仓 Settings → Secrets and variables → Actions 配好 `SSH_PRIVATE_KEY`
 `SSH_HOST` `SSH_USER` `SSH_PORT`（**R4：per-repo，主站的配置不会自动共享**）。
+
+> **执行记录（2026-09-15）**：实际落地的 workflow 相对上文有两处偏离，均已写入文件：
+>
+> 1. 增加了 `workflow_dispatch:` —— 首次上线需要手动触发（首次 push 时 secrets 未必已就位）。
+> 2. `ARGS` 增加了 `--exclude=docs --exclude=AGENT.md`。**这是一处真实的漏洞修复**：
+>    `SOURCE: "./"` 是**仓库根**，原 ARGS 只排除了 `.git` / `.github` / `videos-orig`，
+>    于是 `docs/plan/2026-09-15-product-intro-page-integration-plan.md`（含实例 ID、公网 IP、
+>    服务器路径、证书拓扑）与本文件之外的 `AGENT.md` 会随 rsync 进入公开 webroot，
+>    变成 `https://intro.javatutor.cn/docs/plan/...` **可直接抓取**。
+>    两者均**不被 `index.html` 引用**（已核实；`agent-state-machine.png` 被引用，保留）。
+>
+> **secrets 现状**：`GET /repos/zzmleslie/javatutor-product-introduction-page/actions/secrets`
+> 返回 `total_count: 0` —— **4 个 secrets 一个都没配**，且从未有 workflow 运行过。
+> 当前账号（`holycandle`）在本仓是 `admin: false`，**无权代配**，必须由有 admin 权限的人操作。
+> 在 secrets 配好之前 push 到 `master`，workflow 会在 ssh-deploy 这步**失败**（正是 R4 的形态）。
 
 > 转码后 `videos/` 约 40MB，首次 rsync 传一次，之后是增量（rsync 按块比对，未改动的视频不再传输）。
 > 本 workflow **不重启后端、不 reload nginx** —— 静态文件就位即生效，与主站部署完全解耦。

@@ -24,7 +24,12 @@ jobs:
 
           # --delete 在这里是**想要的**：发布页目录专属于它自己，可安全镜像。
           # 转码后的 videos/ 在仓内，随 rsync 一起同步；--delete 会正确清理删掉的旧文件。
-          ARGS: "-avz --delete --exclude=.git --exclude=.github --exclude=videos-orig"
+          #
+          # docs/ 与 AGENT.md 必须排除：SOURCE 是仓库根，不排除就会连同 rsync 进公开
+          # webroot，变成 https://intro.javatutor.cn/docs/plan/... 可直接抓取。
+          # 那份计划含实例 ID、公网 IP、证书拓扑与服务器路径，属于攻击面测绘信息。
+          # 两者都不被 index.html 引用（已核实），排除不影响页面。
+          ARGS: "-avz --delete --exclude=.git --exclude=.github --exclude=videos-orig --exclude=docs --exclude=AGENT.md"
 
           SOURCE: "./"
           TARGET: "/var/www/javatutor-intro/"
