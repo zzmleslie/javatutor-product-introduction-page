@@ -14,15 +14,17 @@
 > 改为「按使用流量 + 峰值 100 Mbps」。**主站代码零改动。**
 > 备选方案（路径分区）见 §7，后续可选的 CDN 迁移见 §6。
 >
-> **状态（2026-09-15 更新）**：**Task 1 / 2 / 3 / 4 / 5 / 6 均已完成并实测验收**
-> —— 计费已切按流量（T0-5 已解：无闪断、IP 未变）、DNS 已解析、nginx 与证书已就位、
-> 视频 183MB→12.4MB、字体已自托管、workflow 已落盘。
-> 冒烟 S5（码率）/ S7（防盗链）/ S8（计费生效）/ S9（R1 隔离）**已通过**。
+> **状态（2026-09-15 更新）**：**已上线。`https://intro.javatutor.cn` 返回 200，发布页正常。**
 >
-> **仅剩两个外部前置，均非技术问题**：
-> ① 控制台设「消费预警」（API 不可达，见 Task 1 第 1 步，**真页上线前必做**）；
-> ② 本仓 4 个 Actions secrets（当前 `total_count: 0`，且本账号 `admin: false` 无权代配，见 Task 6）。
-> 两者就位后 push 到 `master` 即完成 Task 6/7 的剩余部分（S1/S3/S4/S6/S10/S11）。
+> - Task 1 / 2 / 3 / 4 / 5 / 6 **全部完成并实测验收** —— 计费已切按流量（T0-5 已解：无闪断、IP 未变）、
+>   DNS 已解析、nginx 与证书已就位、视频 183MB→12.4MB、字体已自托管、workflow 已落盘并**首次运行成功（22s）**。
+> - 两个外部前置均已就位：消费预警已由人工在控制台设置；本仓 4 个 Actions secrets 已配齐。
+> - 冒烟 **S1 / S2 / S3 / S4 / S5 / S7 / S9 / S10 通过**（S5 的验证方法见 Task 7 的两个坑）。
+>   `docs/` 与 `AGENT.md` 已确认**未**随 rsync 进入公开 webroot。
+> - **尚未做**：**S6**（需在浏览器里把网络限速到 3 Mbps 后滚完整页，判定视频是否反复缓冲——
+>   这是本次的核心验收，必须在真实浏览器里做，无法用命令行替代）；**S11**（依赖主站下一次部署
+>   自然发生，不为此专门触发）。
+>
 > 计划中所有涉及线上环境的描述均已按实测结果校正。
 
 ---
@@ -521,6 +523,35 @@ jobs:
 | S9 | **R1 隔离回归**（最关键） | 在 ECS 上跑：<br/>`readlink -f /var/www/javatutor-intro`（期望原样返回，**不是** `/opt/javatutor/...`）<br/>`readlink -f /var/www/html`（期望 `/opt/javatutor/dist`，作为对照）<br/>`echo /var/www/javatutor-intro \| grep -q '^/opt/javatutor/' && echo 危险 \|\| echo 安全` | 发布页目录**不在** `--delete` 的 DEST 树内；`安全` |
 | S10 | 发布页链接 | 点「官网 ↗」 | 跳转 `https://javatutor.cn` 可达 |
 | S11 | **主站部署后复验**（真回归） | 主站下次 `deploy.yml` 跑完后，重跑 S1/S3 | 发布页**仍在**、内容未变 |
+
+> ⚠️ **S5 与 S4 的验证方法有两个坑，实测踩到了，必须按下面的做法重跑**：
+>
+> **坑 1 —— S5 不能在服务器上跑 `ffprobe`。** ECS 上**没装 ffmpeg**。写成
+> `for f in ...; do br=$(ffprobe ...); awk -v b="$br" 'BEGIN{print (b<=1500000)?"OK":"FAIL"}'` 时，
+> `ffprobe` 失败 → `br` 为空 → `awk -v b=""` 把空串当 **0** → 每段都判 `OK`。
+> 结果是一轮**全绿但完全无效**的测试（"超过 1.5 Mbps 的段数: 0" 同样是假的）。
+> **正确做法**：不比码率，比**字节**——本地 `md5sum videos/*.mp4` 与服务器
+> `md5sum /var/www/javatutor-intro/videos/*.mp4` 逐一比对。文件逐字节相同，
+> 则在本地 ffprobe 出的码率就是线上的码率，无需在服务器装 ffmpeg。
+> 注意 `md5sum` 格式差异：本地 coreutils 输出 `hash *name`（`*` = binary mode），
+> 服务器输出 `hash  name`，直接 `diff` 会**全部报不等**——得先 `sub(/^\*/,"",$2)` 归一化。
+>
+> **坑 2 —— S4 的状态码无法区分「文件存在」与「回退」。** `try_files $uri $uri/ /index.html`
+> 使**任意不存在的路径都返回 `200`**。所以拿 200 当"资源可达"的判据是失效的。
+> **正确判据是 `Content-Type`**：真资源返回 `video/mp4` / `image/png` / `image/jpeg`，
+> 回退则返回 `text/html`。自检方法：先请求一个确定不存在的路径确认它返回 `text/html`，
+> 判据成立后再逐个跑。
+>
+> 另外，从 `index.html` 用 `grep -oE '(src|href|poster)="[^"]+"'` 提取资源清单时，
+> 会连带抓到 `<script>` 里**模板字符串内的 JS 表达式**（实测抓到 3 个：
+> `${LOGO_CONFIG.img}` / `${cfg.poster}` / `${cfg.video}`），它们不是 URL。
+> 其中 `LOGO_CONFIG.img` 实际取值是 `logo-light.png`（已部署，`image/png` ✅）；
+> `cfg` 来自 `SLOT_SOURCES`，而该对象是**空的** `{}`，循环里 `if(!cfg||!cfg.video)return;`
+> 直接返回，**不会生成任何 video 元素**，故 `${cfg.video}` 永不成为 URL。
+> 这 3 个不是缺失资源，是我的提取方式的产物。
+>
+> **实测结果（2026-09-15）**：21 个真实静态资源全部返回正确 MIME，无一回退；
+> 17 段视频与本地逐字节相同；最大码率 **0.36 Mbps**、合计 **12.39 MB**。
 
 > **S6 是本次的核心验收**：它直接回答「3 Mbps 下页面能不能用」。
 > **S9 用软链/路径判据代替在生产 push** —— 同样的结论（发布页不在删除范围内），代价为零、不碰生产。
