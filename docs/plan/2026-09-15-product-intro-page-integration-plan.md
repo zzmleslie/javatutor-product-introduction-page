@@ -38,7 +38,7 @@
 | C5 | 计费模式 | 可改为**按使用流量计费，峰值可调 100 Mbps，0.8 元/GB**（本计划采用，见 §1） |
 | C6 | `cdn.javatutor.cn` 备案 | 主域名已备案，子域名继承、**无需额外备案** |
 | C7 | 线上证书 | **实测**：Let's Encrypt，`/etc/letsencrypt/live/javatutor.cn/`（**全机只有这一份证书**），SAN 含 `javatutor.cn` / `www` / `miaomiaomiaomiao` / `meowmeowmeowmeow`，**不含 `intro`**；2026-10-21 到期。`certbot.timer` 活跃（每 12h 自检）。需 `--expand` 扩容，**必须列全 5 个域名**（Task 3.2） |
-| C8 | 执行方式 | **实测可用**：ECS 侧经 `workbench exec` 执行（**需 v1.0.1+**，见下方环境说明），实例 `i-bp18peop1g8ir00s8phq`（`javatutor`，cn-hangzhou，Running，Ubuntu 22.04，**passwordless sudo 可用**）。控制台侧（DNS / 带宽计费 / 费用预警）需人工或 `aliyun` CLI |
+| C8 | 执行方式 | **实测可用**：ECS 侧经 `workbench exec` 执行（**需 v1.0.1+**，见下方环境说明），实例 `i-bp18peop1g8ir00s8phq`（`javatutor`，cn-hangzhou，Running，Ubuntu 22.04）。控制台侧（DNS / 带宽计费 / 费用预警）需人工或 `aliyun` CLI。<br/>⚠️ **sudo 按用户区分，不要说成"passwordless sudo 可用"**：`root` 允许（`permitrootlogin without-password`）、`deploy` 有 `(ALL) NOPASSWD: ALL`、而 **`javatutor` 与 `www` 都不在 sudoers 里**（详见 Task 6 前置） |
 | C9 | 17 段视频 | **全部保留**，不做删减 |
 | C10 | **nginx 真实布局** | 全机 **只有 1 个站点文件** `/etc/nginx/sites-enabled/javatutor`，`conf.d/` 为空。**`/var/www/html` 是软链 → `/opt/javatutor/dist`**（inode 已验证相同）。端口 80/443 各只有一个 server 块，**均无 `default_server`** |
 | C11 | 后端 | `java` 监听 `127.0.0.1:8080`，与 `location /api/` 的 `proxy_pass` 一致。SSE 已配 `proxy_buffering off` / `proxy_read_timeout 300s` |
@@ -450,6 +450,38 @@ jobs:
 
 **前置**：在本仓 Settings → Secrets and variables → Actions 配好 `SSH_PRIVATE_KEY`
 `SSH_HOST` `SSH_USER` `SSH_PORT`（**R4：per-repo，主站的配置不会自动共享**）。
+
+> **已确定的取值（2026-09-15）**：
+>
+> | Secret | 值 |
+> |---|---|
+> | `SSH_HOST` | `112.124.67.74` |
+> | `SSH_PORT` | `22`（`sshd -T` 实测，非默认猜测） |
+> | `SSH_USER` | **`deploy`** |
+> | `SSH_PRIVATE_KEY` | 本仓专用 ed25519 私钥，指纹 `SHA256:KvochmD1/Z/lC9jvDX++ZH3N0uju7VXLKf1oF30kqKk` |
+>
+> **为什么是 `deploy` 而不是计划原先默认的 `javatutor`** —— 两条实测结论推翻了原假设：
+>
+> 1. **`javatutor` 根本不能 sudo**（`User javatutor is not allowed to run sudo`）。而本 workflow 的
+>    `SCRIPT_AFTER: sudo chmod -R a+rX ...` 依赖 sudo，`SSH_USER=javatutor` **必然失败**。
+>    计划把"服务用户是 javatutor"和"部署用户能 sudo"当成了一回事，实际不是。`deploy` 有
+>    `(ALL) NOPASSWD: ALL`，`root` 允许密钥登录，`www` 同样不在 sudoers 里。
+> 2. **rsync 是以 `SSH_USER` 身份跑的，sudo 不作用于那一层。** 只有 `SCRIPT_AFTER` 才是经 ssh
+>    执行的独立命令、可以 sudo。所以目标目录的**属主必须就是 `SSH_USER`**，否则 rsync 直接写不进去。
+>    已将 `/var/www/javatutor-intro` 由 `javatutor:javatutor` 改为 `deploy:deploy`（755，
+>    nginx 走 world-read 照常可读，实测 `https://intro.javatutor.cn` 仍 `200`）。
+>
+> **为什么新签一把密钥而不用主站那把**：`/root/.ssh/authorized_keys` 里已有一把注释为
+> `githubActions` 的 ed25519，说明**主站很可能是以 root 部署的**。复用它会同时踩两个问题——
+> 以 root 部署，且两个仓共用一把钥匙（本仓密钥泄露 = 整台服务器沦陷），与 R4 想达成的隔离相悖。
+> 新密钥只写进 `deploy` 的 `authorized_keys`，撤销时删掉那一行即可。
+>
+> **⚠️ 配置入口**：`gh secret set` 需要仓的 **admin** 权限，而当前开发账号（`holycandle`）在本仓是
+> `admin: false`，**命令行会 403**。必须由仓主（`zzmleslie`）在
+> **Settings → Secrets and variables → Actions → New repository secret** 里逐个添加。
+>
+> **实测验收（2026-09-15）**：用新私钥真连了一次，`whoami`→`deploy`、`sudo -n whoami`→`root`、
+> 目标目录写入测试 OK、`sudo chmod -R a+rX` 试跑 OK。不是只看 authorized_keys 就下结论。
 
 > **执行记录（2026-09-15）**：实际落地的 workflow 相对上文有两处偏离，均已写入文件：
 >
